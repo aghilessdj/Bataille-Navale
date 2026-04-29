@@ -1,0 +1,91 @@
+<!-- 
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222 -->
+
+{% extends "base.html" %}
+
+{% block main_content %}
+
+{% if REQUEST_VARS['acces_refuse'] %}
+    <meta http-equiv="refresh" content="2;url=/">
+    {% include 'message.html' %}
+{% else %}
+    <div id="accueil-container">
+        <h2>Bienvenue, {{ SESSION['JOUEUR_COURANT']['pseudo'] }} !</h2>
+
+        <section id="presentation-regles">
+            <h3>Règles du jeu</h3>
+            <p id="parag_description">
+                La bataille navale vous oppose à une IA. Le but est de couler l'intégralité des navires adverse.
+                <strong>Particularité :</strong> Dans cette battaille navale, des cartes bonus et malus viendront le champ de bataille.
+                Pour plus d'informations concernant les cartes bonus et malus, n'hésitez pas à vous rendre sur la page dédiée.
+            </p>
+        </section>
+
+        <section id="statistiques-section">
+            <h3>Vos statistiques</h3>
+
+            <ul class="stats-list">
+                <li><strong>Parties achevées (3 derniers mois) :</strong>
+                    {{REQUEST_VARS['stat_parties_3m'] }}
+                </li>
+                <li><strong>Points cumulés en 2026 :</strong>
+                    {{REQUEST_VARS['stat_points_2026']|default('0', true) }}
+                </li>
+                <li><strong>Moyenne de tours par partie :</strong>
+                    {{REQUEST_VARS['stat_moyenne_tours']|round(2, 'floor') if REQUEST_VARS['stat_moyenne_tours'] else '0' }}
+                </li>
+                <li><strong>Apparition de la carte 'étoiles de la mort' (durant les 10 dernières parties globales) :</strong>
+                    {{REQUEST_VARS['stat_etoile_mort'] }} fois
+                </li>
+            </ul>
+        </section>
+
+        <h4>Victoires par niveau d'adversaire</h4>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Niveau de l'IA</th>
+                    <th>Victoires</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in REQUEST_VARS['stat_victoires'] %}
+                    <tr>
+                        <td>{{ ligne.niveau_expertise }}</td>
+                        <td>{{ ligne.nb_victoires }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">Aucune donnée disponible.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h4>Fréquence d'obtention des cartes</h4>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Type de carte</th>
+                    <th>Tirées</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in REQUEST_VARS['stat_cartes'] %}
+                    <tr>
+                        <td>{{ ligne.type_carte }}</td>
+                        <td>{{ ligne.nb_tirages }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">Aucune donnée disponible.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include 'message.html' %}
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,47 @@
+<!-- 
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222 -->
+
+{% extends "base.html" %}
+
+{% block main_content %}
+<h2 class="page-title">Recherche informations sur le jeu</h2>
+
+<form method="POST" action="rechercher" class="search-form">
+    <fieldset>
+        <legend>Recherche</legend>
+        <label for="nom_table">Chercher dans :</label>
+        <select name="nom_table" id="nom_table">
+            <option value="Joueur">Joueurs</option>
+            <option value="TypeCarte">Cartes</option>
+        </select>
+
+        <label for="valeur">Pseudo :</label>
+        <input type="text" name="valeur" id="valeur" placeholder="Ex: Yac..." required>
+        <input type="submit" value="Scanner" name="bouton_valider" class="btn-primary">
+    </fieldset>
+</form>
+
+{% if REQUEST_VARS['resultats'] %}
+    <table class="results-table">
+        <thead>
+            <tr>
+                {% for champ in REQUEST_VARS['champs'] %}
+                    <th>{{ champ }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for ligne in REQUEST_VARS['resultats'] %}
+                <tr>
+                    {% for v in ligne.values() %}
+                        <td>{{ v }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% include 'message.html' %}
+{% endblock %}

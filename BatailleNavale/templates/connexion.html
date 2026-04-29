@@ -1,0 +1,87 @@
+<!-- 
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222 -->
+
+{% extends "base.html" %}
+
+{% block main_content %}
+<div id="auth-container">
+    {% if REQUEST_VARS['connexion_reussie'] %}
+        {# Redirection automatique vers l'accueil après 1 seconde #}
+        <meta http-equiv="refresh" content="1;url=/accueil">
+        <p>Connexion réussie ! Redirection vers le pont de commandement...</p>
+    {% else %}
+
+        <section id="auth-box">
+            {% if GET and 'inscription' in GET %}
+                
+                <form id="form-inscription" method="POST" action="/">
+                    <fieldset>
+                        <legend>Inscription</legend>
+                        <div>
+                            <label for="pseudo_inscr">Pseudo :</label>
+                            <input type="text" id="pseudo_inscr" name="pseudo_inscr" required>
+                        </div>
+                        <div>
+                            <label for="nom_inscr">Nom :</label>
+                            <input type="text" id="nom_inscr" name="nom_inscr" required>
+                        </div>
+                        <div>
+                            <label for="prenom_inscr">Prénom :</label>
+                            <input type="text" id="prenom_inscr" name="prenom_inscr" required>
+                        </div>
+                        <div>
+                            <label for="date_naiss_inscr">Date de naissance :</label>
+                            <input type="date" id="date_naiss_inscr" name="date_naiss_inscr" required>
+                        </div>
+                        <div>
+                            <input type="submit" value="S'inscrire" name="bouton_inscription" class="submit-btn">  
+                        </div>
+                    </fieldset>
+                </form>
+                <p>Déjà un compte ? </p>
+                <a href="/"><input type="button" value="Se connecter"></a>
+            {% else %}
+
+                <h3>Connexion</h3>
+
+                <form method="POST" action="/">
+                    <fieldset>
+                        <legend>Connexion</legend>
+                    
+                        <div>
+                            <label for="pseudo_recherche">Rechercher un pseudo :</label>
+                            <input type="text" id="pseudo_recherche" name="pseudo_recherche" required>
+                        </div>
+                        <div>
+                            <input type="submit" value="Rechercher" name="bouton_recherche" class="submit-btn">
+                        </div>
+                    </fieldset>
+                </form>
+                {% if REQUEST_VARS['joueurs_trouves'] %}
+                    <form method="POST" action="/">
+                        <fieldset>
+                            <legend>Résultats de la recherche</legend>
+                                <ul>
+                                    {% for j in REQUEST_VARS['joueurs_trouves'] %}
+                                        <li>
+                                            <input type="hidden" name="id_joueur" value="{{ j.idj }}">
+                                            <input type="submit" name ="bouton_choix" value="{{j.pseudo}} - id: {{j.idj}}" class="joueurs-trouves">
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                        </fieldset>
+                    </form>
+                {% endif %}
+                
+                <p>Nouveau joueur ? </p>
+                <a href="/?inscription=true"><input type="button" value="Créer un compte"></a>
+
+            {% endif %}
+        </section>
+    {% endif %}
+
+    {% include 'message.html' %}
+</div>
+
+{% endblock %}

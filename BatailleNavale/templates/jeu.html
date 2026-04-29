@@ -1,0 +1,256 @@
+<!-- 
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222 -->
+
+{% extends "base.html" %}
+
+{% block main_content %}
+
+{% if REQUEST_VARS['acces_refuse'] %}
+    <meta http-equiv="refresh" content="2;url=/">
+    {% include 'message.html' %}
+{% else %}
+    <div id="jeu-container">
+        <h2>Partie #{{REQUEST_VARS['partie']['idp'] }}</h2>
+
+        <div class="hud-bataill">
+            <div class="info-tour">
+                Tour en cours : <strong>{{ REQUEST_VARS['num_tour'] }}</strong>
+            </div>
+            <div class="info-carte">
+                <h3>Carte piochée</h3>
+                {% if REQUEST_VARS['carte_active'] %}
+                    <img src="/BatailleNavale/static/img/{{ REQUEST_VARS['carte_active']['image'] }}" 
+                             alt="{{ REQUEST_VARS['carte_active']['nom'] }}" 
+                             style="max-width: 150px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin-bottom: 10px;">
+                    <br>
+                    <strong>{{ REQUEST_VARS['carte_active']['nom'] }}</strong> - <em>{{ REQUEST_VARS['carte_active']['description'] }}</em>
+                {% else %}
+                    <em>En attente de cartes</em>
+                {% endif %}
+            </div>
+
+            <div class="grilles">
+                <div class="grille_joueur">
+                    <h3>Ma grille</h3>
+                    <table class="grille-bataille">
+                        <thead>
+                            <tr>
+                                <th class="cellule-coin"></th>
+                                {% for lettre in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] %}
+                                    <th class="en-tete-col">{{ lettre }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ligne in range(1, 11) %}
+                                <tr>
+                                    <th class="en-tete-ligne">{{ ligne }}</th>
+                                    {% for lettre in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] %}
+                                        {% set coord = lettre ~ ligne %}
+                                        {# On récupère l'état de la case depuis le dictionnaire, 'eau' par défaut #}
+                                        {% set etat = REQUEST_VARS['grille_joueur'].get(coord, 'eau') %}
+                                        {# Ajout pour le placement des bonus #}
+                                        <td class="cellule {{ etat }}" title="{{ coord }}" data-ligne="{{ ligne }}" data-lettre="{{ lettre }}"
+                                        {% if REQUEST_VARS['etape_tour'] == 'attente_placement_bonus' and etat == 'eau' %}
+                                            style="cursor: cell; border: 2px dashed #00ff00;"
+                                            onclick="placerBonus(this.dataset.ligne, this.dataset.lettre)"
+                                        {% elif REQUEST_VARS['etape_tour'] == 'attente_selection_navire_mpm' and etat == 'touche' %}
+                                            style="cursor: pointer; border: 2px dashed #ffa500;"
+                                            onclick="selectionnerNavireMPM('{{ coord }}')"
+                                        {% endif %}>
+                                            {% if etat == 'bateau' %}
+                                                <img src="/BatailleNavale/static/img/Cellule_navire.png" alt="Cellule navire"/>
+                                            {% elif etat == 'touche' or etat == 'coule' %} 
+                                                <img src="/BatailleNavale/static/img/Cellule_touche.png" alt="Cellule touché"/>
+                                            {% elif etat == 'rate' %} 
+                                                <img src="/BatailleNavale/static/img/Cellule_aLeau.png" alt="Cellule à l'eau"/>
+                                            {% else %} 
+                                                <img src="/BatailleNavale/static/img/Cellule_nonExploree1.png" alt="Cellule non exploré"/>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grille_adverse">
+                    <h3>Grille ennemie</h3>
+                    <table class="grille-bataille">
+                        <thead>
+                            <tr>
+                                <th class="cellule-coin"></th>
+                                {% for lettre in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] %}
+                                    <th class="en-tete-col">{{ lettre }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ligne in range(1, 11) %}
+                                <tr>
+                                    <th class="en-tete-ligne">{{ ligne }}</th>
+                                    {% for lettre in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] %}
+                                        {% set coord = lettre ~ ligne %}
+                                        {% set etat = REQUEST_VARS['grille_adversaire'].get(coord, 'eau') %}
+                                        
+                                        {%if REQUEST_VARS['etape_tour'] in ['attente_tir_joueur', 'attente_verification_vide'] and etat == 'eau' %}
+                                            <td class="cellule {{ etat }}" title="Tirer sur {{ coord }}" 
+                                                style="cursor: crosshair;" 
+                                                data-ligne="{{ ligne }}" 
+                                                data-lettre="{{ lettre }}"
+                                                {% if REQUEST_VARS['etape_tour'] == 'attente_tir_joueur' %}
+                                                    onclick="executerTir(this.dataset.ligne, this.dataset.lettre)"
+                                                {% else %}
+                                                    onclick="verifierCase(this.dataset.ligne, this.dataset.lettre)"
+                                                {% endif %}>
+
+                                                {% if etat == 'touche' or etat == 'coule' %}
+                                                    <img src="/BatailleNavale/static/img/Cellule_touche.png" alt="Cellule touché"/>
+                                                {% elif etat == 'rate' %}
+                                                    <img src="/BatailleNavale/static/img/Cellule_aLeau.png" alt="Cellule à l'eau"/>
+                                                {% else %}
+                                                    <img src="/BatailleNavale/static/img/Cellule_nonExploree1.png" alt="Cellule non exploré"/>
+                                                {% endif %}
+                                            </td>
+                                        {% else %}
+                                            <td class="cellule {{ etat }}" title="{{ coord }}">
+                                                    {% if etat == 'touche' or etat == 'coule' %}
+                                                        <img src="/BatailleNavale/static/img/Cellule_touche.png" alt="Cellule touché"/>
+                                                    {% elif etat == 'rate' %}
+                                                        <img src="/BatailleNavale/static/img/Cellule_aLeau.png" alt="Cellule à l'eau"/>
+                                                    {% else %}
+                                                        <img src="/BatailleNavale/static/img/Cellule_nonExploree1.png" alt="Cellule non exploré"/>
+                                                    {% endif %}
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panneau-commandes">
+                {% if REQUEST_VARS['partie']['etat'] == 'Créée' %}
+                    <form method="POST" action="/jeu">
+                        <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                        <button type="submit" name="bouton_commencer" class="action-btn" value="1">Commencer la partie</button>
+                    </form>
+
+                {% elif REQUEST_VARS['partie']['etat'] == 'En cours' %}
+                    {% if REQUEST_VARS['etape_tour'] == 'attente_tir_joueur' %}
+                        <form method="POST" action="/jeu" class="form-tir">
+                            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                            <label for="coordX">Abscisse (1-10):</label>
+                            <input type="number" name="coordX" id="coordX" min="1" max="10" required>
+                        
+                            <label for="coordY">Ordonnée (A-J):</label>
+                            <input type="text" name="coordY" id="coordY" pattern="[A-Ja-j]" maxlength="1" required>
+                            
+                            <button type="submit" name="bouton_tirer" class="action-btn offensive-btn" value="1">Faire Feu</button>
+                        </form>
+                    {% elif REQUEST_VARS['etape_tour'] == 'attente_suivant_joueur' %}
+                        <form method="POST" action="/jeu">
+                            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                            <button type="submit" name="bouton_suivant" class="action-btn" value="1">Laissez l'ennemi riposter</button>
+                        </form>
+                    {% elif REQUEST_VARS['etape_tour'] == 'attente_passe_tour' %}
+                        <form method="POST" action="/jeu">
+                            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                            <button type="submit" name="bouton_accepter_passe" class="action-btn" value="1">Mince, je passe mon tour...</button>
+                        </form>
+                    {% elif REQUEST_VARS['etape_tour'] == 'attente_oups' %}
+                        <form method="POST" action="/jeu">
+                            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                            <button type="submit" name="bouton_accepter_oups" class="action-btn" value="1">Subir l'accident :c</button>
+                        </form>
+                    {% endif %}
+
+                    <form method="POST" action="/jeu" style="margin-top: 20px;">
+                        <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                        <button type="submit" name="bouton_suspendre" class="action-btn repli-btn" value="1">Suspendre la partie</button>
+                    </form>
+
+                {% elif REQUEST_VARS['partie']['etat'] in ['Gagnée', 'Perdue'] %}
+                    <div class="bilan-bataille">
+                        <h3>Le conflit est terminé.</h3>
+                        <p>{{ SESSION['JOUEUR_COURANT']['pseudo'] }} a <strong>{{ 'gagné' if REQUEST_VARS['partie']['etat'] == 'Gagnée' else 'perdu' }}</strong> la partie.</p>
+                        <a href="/accueil" class="action-btn">Quitter la zone de combat</a>
+                    </div>
+                {% elif REQUEST_VARS['partie']['etat'] == 'Suspendue' %}
+                    <div class="bilan-bataille">
+                        <h3>Partie suspendue</h3>
+                        <p>La partie est en pause.</p>
+                        <form method="POST" action="/jeu" style="display:inline-block; margin-right: 10px;">
+                            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+                            <button type="submit" name="bouton_reprendre_partie" class="action-btn" value="1">Reprendre la partie</button>
+                        </form>
+                        <a href="/parties" class="action-btn" style="display: inline-block; text-decoration: none; text-align: center;">Retour aux parties</a>
+                    </div>
+                {% endif %}
+            </div>
+            {% include 'message.html' %}
+        </div>
+        <form id="form-tir-clic" method="POST" action="/jeu" style="display: none;">
+            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+            <input type="hidden" name="coordX" id="clic_coordX">
+            <input type="hidden" name="coordY" id="clic_coordY">
+            <input type="hidden" name="bouton_tirer" value="1">
+        </form>
+        <form id="form-placement-bonus" method="POST" action="/jeu" style="display: none;">
+            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+            <input type="hidden" name="coordX" id="bonus_coordX">
+            <input type="hidden" name="coordY" id="bonus_coordY">
+            <input type="hidden" name="bouton_placer_bonus" value="1">
+        </form>
+        <form id="form-verifier-clic" method="POST" action="/jeu" style="display: none;">
+            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+            <input type="hidden" name="coordX" id="verif_coordX">
+            <input type="hidden" name="coordY" id="verif_coordY">
+            <input type="hidden" name="bouton_verifier" value="1">
+        </form>
+        <form id="form-reparer-mpm" method="POST" action="/jeu" style="display: none;">
+            <input type="hidden" name="id_partie" value="{{ REQUEST_VARS['partie']['idp'] }}">
+            <input type="hidden" name="ancienXY" id="mpm_ancien_xy">
+            <input type="hidden" name="coordX" id="mpm_nouveau_x">
+            <input type="hidden" name="coordY" id="mpm_nouveau_y">
+            <input type="hidden" name="bouton_reparer_mpm" value="1">
+        </form>
+    </div>
+{% endif %}
+
+<script>
+    function executerTir(x, y) {
+        // On remplit les champs cachés avec les coordonnées cliquées
+        document.getElementById('clic_coordX').value = x;
+        document.getElementById('clic_coordY').value = y;
+        // On soumet le formulaire fantôme
+        document.getElementById('form-tir-clic').submit();
+    }
+    function placerBonus(x, y) {
+        document.getElementById('bonus_coordX').value = x;
+        document.getElementById('bonus_coordY').value = y;
+        document.getElementById('form-placement-bonus').submit();
+    }
+    function verifierCase(x, y) {
+        document.getElementById('verif_coordX').value = x;
+        document.getElementById('verif_coordY').value = y;
+        document.getElementById('form-verifier-clic').submit();        
+    }
+    function selectionnerNavireMPM(ancienCoord) {
+        let destination = prompt("Entrez les nouvelles coordonnées pour le déplacement de votre bateau :");
+        if (destination && destination.length >= 2) {
+            let y = destination.charAt(0).toUpperCase();
+            let x = destination.substring(1);
+            
+            document.getElementById('mpm_ancien_xy').value = ancienCoord;
+            document.getElementById('mpm_nouveau_x').value = x;
+            document.getElementById('mpm_nouveau_y').value = y;
+            document.getElementById('form-reparer-mpm').submit();
+        }
+    }
+</script>
+{% endblock %}

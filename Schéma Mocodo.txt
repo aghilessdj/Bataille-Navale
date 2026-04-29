@@ -1,0 +1,76 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                         %
+%                                 ENTITÉ                                  %
+%                                                                         %
+%  Pour créer une entité E, écrivez sur une ligne « E: ».                 %
+%  Bon à savoir : les lignes commençant par « % » sont des commentaires.  %
+%                                                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%mocodo -i ../examples/landing --select mcd --seed=2 -t arrange
+
+:
+:
+Virtuel: niveau_expertise 
+:
+Joue_virt., 1N Virtuel, 11 Partie
+:
+:
+:
+:
+:
+
+Joueur: idJ, pseudo
+/X\ Joueur <- Virtuel, Humain
+:
+Créé_par, 11 Virtuel, 0N Humain: date_création
+:
+:
+Partie: code, état
+Se_déroule_en, 1N Partie, _11 Séquence_temporelle
+Séquence_temporelle: date_début, heure_début, date_fin, heure_fin
+:
+
+:
+:
+Humain: nom, prénom, date_naissance
+:
+Joue_réel., 1N Humain, 11 Partie
+:
+Se_décompose_en, 1N Partie, _11 Tour
+Dispose, 11 Partie, 1N Pioche
+:
+:
+
+:
+:
+:
+:
+:
+Execute, 1N Tour, _11 Tir
+Tour: numT
+Pioche: idPi, nom_distrib
+A_pour_distribution, 1N Pioche, 1N TypeCarte
+:
+
+:
+:
+A_gagné, 0N Joueur,  11 Partie 
+:
+:
+:
+Rang_carte: rang 
+Appartient, 1N Pioche, 1N Rang_carte, 1N Carte
+:
+:
+
+
+Est_effectué_par,  1N Joueur, _11 Tir
+:
+:
+:
+Tir: numTi, coordX, coorY
+Avec_le_tirage, _11 Tir, 1N Carte
+Carte: idC
+Est_de_type, 11 Carte, 1N TypeCarte
+TypeCarte: code, bonus?, nom, description, image

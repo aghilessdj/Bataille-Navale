@@ -1,0 +1,267 @@
+/*
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222
+*/
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+    background: #0A192F;
+    color: #E0FBFC;
+}
+
+/*=============== Header =====================*/
+
+header {
+    background: #001D3D;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.4);
+}
+
+
+/*========================= Menu =========================*/
+header nav ul {
+    list-style: none;
+}
+
+header nav ul li {
+    display: inline;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: #E0FBFC;
+    padding: 10px;
+    margin: 15px;
+}
+
+header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+nav .submit-btn {
+    background-color: red;
+    color: white; 
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+nav .submit-btn:hover {
+    background-color: darkred; 
+}
+
+/*========================= Main =========================*/
+
+main {
+    padding: 30px;
+    margin: 10px;
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #0B3D91, #001D3D);
+}
+main h1 {
+    margin-bottom: 5px;
+}
+main h1+p {
+    margin-top: 5px;
+}
+
+/*=============== Footer =====================*/
+footer {
+    background: #001D3D;
+    display: flex;
+    justify-content: space-around;
+    align-items: top;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.4);
+}
+
+footer div ul {
+    margin: 0;
+    padding: 0;
+}
+
+footer div ul li {
+    list-style: none;
+}
+
+footer div ul li a {
+    color: #E0FBFC;
+}
+footer div ul li a:hover {
+    color: #FFF;
+    font-weight: bold;
+}
+
+/*====== Page de connexion, inscription ======*/
+
+#auth-box {
+    padding: 15px;
+    margin-bottom: 15px;
+    min-width: 30px;
+}
+
+label {
+    display: block;
+}
+
+fieldset {
+    border: 2px solid #0000ff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    min-width: 30px;
+}
+
+legend {
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+    padding: 10px;
+}
+
+select, input[type="text"], input[type="date"] {
+    width: 97%;
+    padding: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #999;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+input[type="submit"], input[type="button"],
+.panneau-commandes button,
+.bilan-bataille .action-btn {
+    background: linear-gradient(to right, #6666ff, #0000ff);
+    background-size: 200% 100%;
+    color: white;
+    padding: 10px 20px;
+    margin: 15px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-position 1s ease; 
+    border-radius: 30px;
+    justify-content: left;
+}
+input[type="submit"]:hover, input[type="button"]:hover 
+.panneau-commandes button:hover,
+.bilan-bataille .action-btn:hover {
+    background-position: -100% 0; 
+}
+
+form+p{
+    display: inline;
+    font-size: 1.5em;
+}
+
+ul li .joueurs-trouves {
+    background: linear-gradient(to right, #8080ff, #6060ff);
+    background-size: 200% 100%;
+    color: white;
+    border-radius: 30px;
+    padding: 5px 10px;
+    margin: 5px 5px;
+    border-radius: 5px;
+    width: 250px;
+}
+
+form fieldset ul li {
+    list-style: none;
+}
+
+
+/* ================== Page accueil ================= */
+
+tr, th, td{
+    border: solid 3px #0A192F;
+    text-align: center;
+}
+table {
+    width: 80%;
+    border-collapse: collapse;
+}
+
+.missions-accueil {
+    padding: 10px 0 10px 0;
+}
+.missions-accueil ul {
+    list-style-type: none;
+}
+.missions-accueil ul li:first-child{
+    border-top: solid 1px #0A192F;
+}
+.missions-accueil ul li {
+    padding: 5px 0 5px 0;
+    width: 100%;
+    border-bottom: solid 1px #0A192F;
+}
+
+.missions-accueil ul li a {
+    color: #E0FBFC;
+}
+.missions-accueil ul li a:hover {
+    color: #FFF;
+    font-weight: bold;
+}
+
+
+/* ================== Page Jeu ================= */
+
+.grilles {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+.grilles table {
+    max-width: 700px;
+    padding: 0;
+}
+
+.grilles div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.grilles table tbody td, 
+.grilles table tbody tr,
+.grilles table tbody th {
+    margin: 0;
+    padding: 0;
+    height: 9%;
+    width: 9%;
+}
+
+.grilles div table tbody tr td img {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.grilles div table tbody tr td img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+td[onclick] {
+    cursor: pointer;
+    transition: 0.1s;
+}
+td[onclick]:hover {
+    filter: brightness(1.2);
+    transform: scale(0.98);
+}
+
+button[name="bouton_suspendre"] {
+    background: linear-gradient(to right, #cc0000, #880000) !important;
+}

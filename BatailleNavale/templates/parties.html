@@ -1,0 +1,115 @@
+<!-- 
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222 -->
+
+{% extends "base.html" %}
+
+{% block main_content %}
+{% if REQUEST_VARS['acces_refuse'] %}
+    <meta http-equiv="refresh" content="2;url=/">
+    {% include 'message.html' %}
+{% else %}
+<div id="parties-container">
+    <h2>Vos Batailles</h2>
+
+    <section class="nouvelle_partie_section">
+
+        <div class="split-forms">
+
+            <div class="form-box">
+                <form method="POST" action="/jeu">
+                    <fieldset>
+                        <legend>Lancer une nouvelle partie</legend>
+                        <label for="id_adversaire">Adversaire :</label>
+                        <select name="id_adversaire" id="id_adversaire" required>
+                            <option value="">Choisissez l'IA</option>
+                            {% for bot in REQUEST_VARS['bots_disponibles'] %}
+                                <option value="{{ bot.idj }}">{{ bot.pseudo}} (niveau: {{ bot.niveau_expertise }})</option>
+                            {% endfor %}
+                        </select>
+                        <input type="submit" name="bouton_nouvelle_partie" class="submit-btn" value="Lancer la partie">
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="form-box">
+                <form method="POST" action="/parties">
+                    <fieldset>
+                        <legend>Créer une nouvelle IA</legend>
+                        <label for="pseudo-bot">Nom de l'IA :</label>
+                        <input type="text" name="pseudo_bot" id="pseudo_bot" required>
+
+                        <label for="niveau_bot">Niveau de l'IA :</label>
+                        <select name="niveau_bot" id="niveau_bot" required>
+                            <option value="Faible">Faible</option>
+                            <option value="Intermédiaire">Intermédiaire</option>
+                            <option value="Expert">Expert</option>
+                            <option value="Impossible">Impossible</option>
+                        </select>
+                        <input type="submit" name="bouton_creer_bot" class="submit-btn" value="Créer l'IA">
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="parties-en-cours">
+    <fieldset>
+            <legend>Parties en cours</legend>
+            {% if REQUEST_VARS['mes_parties'] %}
+                <table id="table-parties" class="table-navale">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Identifiant</th>
+                            <th rowspan="2">Créée le</th>
+                            <th rowspan="2">à</th>
+                            <th rowspan="2">Niveau ennemi</th>
+                            <th rowspan="2">Tours</th>
+                            <th colspan="2">Mes navires</th>
+                            <th colspan="2">Navires ennemis</th>
+                            <th rowspan="2">Actions</th>
+                        </tr>
+                        <tr>
+                            <th>Nb coulés</th>
+                            <th>Nb touchés</th>
+                            <th>Nb coulés</th>
+                            <th>Nb touchés</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for partie in REQUEST_VARS['mes_parties'] %}
+                        <form method="POST" action="/jeu">
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="id_partie_reprise" value="{{ partie.idp }}" required/>
+                                    #{{ partie.idp }}
+                                </td>
+                                <td>{{ partie.date_creation }}</td>
+                                <td>{{ partie.heure_creation }}</td>
+                                <td>{{ partie.nv }}</td>
+                                <td>
+                                    <input type="hidden" name="num_tour" id="num_tour" value="{{ partie.nb_tours }}" required/>
+                                    {{ partie.nb_tours }}
+                                </td>
+                                <td>{{ partie.coules_virt }}</td>
+                                <td>{{ partie.touches_virt }}</td>
+                                <td>{{ partie.coules_hum }}</td>
+                                <td>{{ partie.touches_hum }}</td>
+                                <td>
+                                    <input type="submit" name="bouton_reprendre_partie" class="submit-btn" value="Rejoindre">
+                                </td>
+                            </tr>
+                        </form>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Aucune bataille en cours.</p>
+            {% endif %}
+        </fieldset>
+    </section>
+
+    {% include 'message.html' %}
+</div>
+{% endif %}
+{% endblock %}

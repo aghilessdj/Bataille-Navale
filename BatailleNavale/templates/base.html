@@ -1,0 +1,35 @@
+<!-- 
+VITTEAU Magdi 12511408
+SAIDJ Aghiles 12511222 -->
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <base href="/">
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <link type="text/css" rel="stylesheet" href="/BatailleNavale/static/css/style.css">
+  <link rel="shortcut icon" type="image/x-icon" href="/BatailleNavale/static/img/logo_BatailleNavale.svg" />
+  <title>{{ SESSION['APP'] }} - {{ SESSION['BASELINE'] }}</title>
+</head>
+
+{% include 'header.html' %}
+
+<body>
+  <div id="div-central">
+  
+		
+    <main>
+      <h1>{{ SESSION['APP'] }}</h1>
+		  <p>{{ SESSION['BASELINE'] }}</p>
+      {% block main_content %}{% endblock %}
+    </main>
+  </div>
+
+  
+</body>
+
+{% include 'footer.html' %}
+
+</html>
